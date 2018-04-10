@@ -6,17 +6,16 @@
  * An example for if you want to keep using your raml2html v1.x handlebars templates
  */
 
-var raml2html = require('..');
-var handlebars = require('handlebars');
-var marked = require('marked');
-var renderer = new marked.Renderer();
-var Q = require('q');
-var fs = require('fs');
-var pjson = require('../package.json');
-var path = require('path');
+const raml2html = require('..');
+const handlebars = require('handlebars');
+const marked = require('marked');
+const renderer = new marked.Renderer();
+const fs = require('fs');
+const pjson = require('../package.json');
+const path = require('path');
 
 renderer.table = function (thead, tbody) {
-  return '<table class="table"><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>';
+  return `<table class="table"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
 };
 
 function responseExists(context) {
@@ -25,7 +24,7 @@ function responseExists(context) {
 
 function _markDownHelper(text) {
   if (text && text.length) {
-    return new handlebars.SafeString(marked(text, { renderer: renderer }));
+    return new handlebars.SafeString(marked(text, { renderer }));
   }
 
   return '';
@@ -33,7 +32,7 @@ function _markDownHelper(text) {
 
 function _lockIconHelper(securedBy) {
   if (securedBy && securedBy.length) {
-    var index = securedBy.indexOf(null);
+    const index = securedBy.indexOf(null);
     if (index !== -1) {
       securedBy.splice(index, 1);
     }
@@ -50,18 +49,21 @@ function _emptyResourceCheckHelper(options) {
   if (this.methods || (this.description && this.parentUrl)) {
     return options.fn(this);
   }
+  return false;
 }
 
 function _emptyRequestCheckHelper(options) {
   if (responseExists(this)) {
     return options.fn(this);
   }
+  return false;
 }
 
 function _missingRequestCheckHelper(options) {
   if (!responseExists(this)) {
     return options.fn(this);
   }
+  return false;
 }
 
 function _ifTypeIsString(options) {
@@ -72,47 +74,47 @@ function _ifTypeIsString(options) {
   return options.inverse(this);
 }
 
-var helpers = {
+const helpers = {
   emptyResourceCheck: _emptyResourceCheckHelper,
   emptyRequestCheckHelper: _emptyRequestCheckHelper,
   missingRequestCheckHelper: _missingRequestCheckHelper,
   md: _markDownHelper,
   lock: _lockIconHelper,
-  ifTypeIsString: _ifTypeIsString
+  ifTypeIsString: _ifTypeIsString,
 };
 
-var partials = {
+const partials = {
   resource: fs.readFileSync(path.join(__dirname, 'resource.handlebars'), 'utf8'),
-  item: fs.readFileSync(path.join(__dirname, 'item.handlebars'), 'utf8')
+  item: fs.readFileSync(path.join(__dirname, 'item.handlebars'), 'utf8'),
 };
 
 // Register handlebar helpers
-helpers.forEac(function (helperName) {
+helpers.forEach((helperName) => {
   handlebars.registerHelper(helperName, helpers[helperName]);
 });
 
 // Register handlebar partials
-partials.forEach(function (partialName) {
+partials.forEach((partialName) => {
   handlebars.registerPartial(partialName, partials[partialName]);
 });
 
-var config = raml2html.getDefaultConfig();
+const config = raml2html.getDefaultConfig();
 
 config.processRamlObj = function (ramlObj) {
-  var template = fs.readFileSync(path.join(__dirname, 'template.handlebars'), 'utf8');
+  const template = fs.readFileSync(path.join(__dirname, 'template.handlebars'), 'utf8');
 
   ramlObj.config = {
     protocol: 'https:',
-    raml2HtmlVersion: pjson.version
+    raml2HtmlVersion: pjson.version,
   };
 
-  return Q.fcall(function () {
-    return handlebars.compile(template)(ramlObj);
+  return new Promise((resolve) => {
+    resolve(handlebars.compile(template)(ramlObj));
   });
 };
 
-raml2html.render('example.raml', config).then(function (result) {
+raml2html.render('example.raml', config).then((result) => {
   console.log(result);
-}, function (error) {
+}, (error) => {
   console.log('error! ', error);
 });

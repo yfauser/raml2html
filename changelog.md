@@ -1,3 +1,28 @@
+3.0.1 - September 16, 2016
+- Fixed a problem where the output would be truncated after 65536 characters (#259)
+
+3.0.0 - August 10, 2016
+- Released without further changes
+
+3.0.0-beta2 - August 8, 2016
+- Updated to raml2obj 3.0.0-beta2
+- Fixed rendering of the github.raml example file (#249)
+
+3.0.0-beta1 - August 7, 2016
+- Updated code to use ES6 syntax
+- Updated all dependencies
+- Breaking change: Node 4 or higher is now required
+- Breaking change: nunjucks-markdown 2.0.0 is a bit fuzzy with whitespace, please check
+  https://github.com/raml2html/raml2html/pull/231 for help with updating your custom templates.
+
+2.5.0 - August 4, 2016
+- Updated highlight.js to 9.3.0
+- Added support for securedBy scopes
+- Added syntax highlighting within modals
+- Improved item display of values false and 0
+- Improved multiple security schemes handling
+- Horizontally scroll overflowing code snippets
+
 2.4.0 - March 12, 2016
 - Downgraded Nunjucks back to 1.3.0 due to peer conflicts with nunjucks-markdown
   (which can't be upgraded because the newest version is broken)
@@ -36,7 +61,7 @@
 2.0.0 - May 22, 2015
 - Using a promise based API, please see README for updated usage example
 - Using Nunjucks by default, instead of Handlebars
-- Made it a lot easier to completely customize the entire rendering process, allowing you for example to use not only 
+- Made it a lot easier to completely customize the entire rendering process, allowing you for example to use not only
   custom templates but even a different template engine
 - Got rid of the -s / https option, all external sources are simply always loaded via https
 - Got rid of the -r and -m template options, as the resource- and item templates are now simply loaded from within
